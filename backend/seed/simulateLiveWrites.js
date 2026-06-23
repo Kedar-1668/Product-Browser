@@ -12,9 +12,6 @@ const MONGODB_URI = process.env.MONGODB_URI;
  *   at the very top of the "newest first" feed).
  * - Updates 25 random existing products' price + updated_at (their
  *   created_at, and therefore their position in the list, stays put).
- *
- * Run this in a second terminal while you paginate through the UI/API
- * to confirm: no duplicate products, no skipped products.
  */
 async function simulate() {
   await mongoose.connect(MONGODB_URI);

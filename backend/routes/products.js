@@ -3,39 +3,7 @@ import Product from "../models/Product.js";
 
 const router = express.Router();
 
-/**
- * GET /api/products
- *
- * Query params:
- *   category   - optional, filter by exact category
- *   limit      - optional, page size (default 20, max 100)
- *   cursor     - optional, opaque base64 cursor returned by previous page.
- *                Omit it to get page 1 (the newest products).
- *
- * WHY CURSOR (KEYSET) PAGINATION INSTEAD OF page/skip:
- *
- * With `skip(n).limit(k)` pagination, "page 2" literally means
- * "skip the first n docs of whatever the collection looks like RIGHT NOW,
- * then take the next k." If 50 new products are inserted at the top while
- * a user is browsing, every doc shifts down by 50 positions. The user's
- * "page 2" request now re-fetches docs they already saw on page 1, and
- * skips 50 products they never saw. That's exactly the duplicate/missing
- * bug this task warns about. skip() also gets slower the deeper you
- * paginate, because MongoDB still has to walk over and discard all the
- * skipped documents.
- *
- * Cursor pagination instead asks: "give me the next products *after this
- * specific product*", using a tuple of (created_at, _id) as the cursor.
- * Because created_at and _id never change for a document that's already
- * been created, the cursor stays valid no matter how many new documents
- * get inserted above it or how many other documents get updated. New
- * inserts appear only on a *future* "refresh to top" call, and in-place
- * updates (price/updated_at change) don't move a product's position at
- * all, since we sort by created_at, not updated_at. Each query is also an
- * indexed range scan (`created_at < cursor_value`), so it's O(log n + limit)
- * instead of O(skip + limit) -- pagination stays fast on page 5,000 just
- * like it is on page 1.
- */
+
 
 function encodeCursor(doc) {
   const payload = JSON.stringify({
